@@ -23,22 +23,7 @@ All BP26 pages:
   -------------------------------------------------
   */
 
-  const loaderScript = document.currentScript;
-
-  const loaderUrl = loaderScript?.src
-    ? new URL(loaderScript.src)
-    : new URL("./js/load-header.js", window.location.href);
-
-  /*
-  load-header.js is:
-
-  /bp26/js/load-header.js
-
-  so:
-
-  ../   = /bp26/
-  ../../ = site root
-  */
+const loaderUrl = new URL("/bp26/js/load-header.js","https://zat.am");
 
   const bp26Root = new URL("../", loaderUrl);
 

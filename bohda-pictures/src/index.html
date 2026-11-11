@@ -1,0 +1,130 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+<title>Bodha Pictures | BodhaPlay</title>
+    <!-- ==============================
+         Bodha Words Game Styling
+    ============================== -->
+    <link rel="stylesheet" href="/src/style.css">
+
+    <!-- ==============================
+         Shared BodhaPlay Navbar Styling
+    ============================== -->
+    <link
+        rel="stylesheet"
+        href="https://zat.am/bp26/css/header.css"
+    >
+
+    <!-- ==============================
+         Game Dependencies
+    ============================== -->
+    <script src="https://unpkg.com/papaparse@5.7.0/papaparse.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@sanskrit-coders/sanscript@1.2.8/sanscript.js"></script>
+
+    <link rel="stylesheet" href="/shared/navbar.css">
+    <link rel="stylesheet" href="/bp26/css/header.css">
+</head>
+
+<body>
+
+    <!-- ==============================
+         Shared Navbar Placeholder
+    ============================== -->
+    <div id="header-placeholder"></div>
+
+    <!-- ==============================
+         BODHA WORDS NAVIGATION FIX
+         Only affects this game
+    ============================== -->
+    <script>
+        document.addEventListener("click", function (event) {
+
+            const navbar = document.getElementById(
+                "header-placeholder"
+            );
+
+            if (!navbar || !navbar.contains(event.target)) {
+                return;
+            }
+
+            const clickedElement = event.target.closest(
+                ".zatam-logo, [data-nav-page='contest'], #navbar-login-btn"
+            );
+
+            if (!clickedElement) {
+                return;
+            }
+
+            let destination = null;
+
+            // Logo -> Competition homepage
+            if (clickedElement.matches(".zatam-logo")) {
+                destination = "https://zat.am/bp26/index.html";
+            }
+
+            // Contest -> Competition homepage
+            else if (
+                clickedElement.matches("[data-nav-page='contest']")
+            ) {
+                destination = "https://zat.am/bp26/index.html";
+            }
+
+            // Login -> Live authentication page
+            else if (
+                clickedElement.matches("#navbar-login-btn")
+            ) {
+                const loginUrl = new URL(
+                    "/auth/login.html",
+                    "https://zat.am"
+                );
+
+                loginUrl.searchParams.set(
+                    "redirect",
+                    window.location.href
+                );
+
+                destination = loginUrl.href;
+            }
+
+            if (destination) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                window.location.assign(destination);
+            }
+
+        }, true);
+    </script>
+<!-- 
+    ==============================
+         Shared BodhaPlay Navbar Loader
+         Temporarily disabled
+    ============================== -->
+    <script
+        type="module"
+        src="/bp26/js/load-header.js"
+    ></script>
+   
+
+    <!-- ==============================
+         Bodha Words Game
+         FIXED: Complete script tag
+    ============================== -->
+    <script
+        type="module"
+        src="../hooks/script.js"
+    ></script>
+
+</body>
+</html>
+

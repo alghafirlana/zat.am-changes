@@ -1,0 +1,617 @@
+        
+        import zim from "https://zimjs.org/cdn/019/zim_game";
+        import {createElement, Clock3, CircleX, RotateCcw, CircleHelp, House} from "https://esm.sh/lucide@0.468.0";
+
+        let timer;
+         let setp = "";
+
+        function padz(num) {
+        num = num.toString();
+        if (num.length < 2) num = "0" + num;
+        return num;
+    }
+
+        // See Docs under Frame for FIT, FILL, FULL, and TAG
+        // 768 x 1024 good for tablets, laptops, desktops 
+        // 500 x 1000 good for phones
+
+        function addLucideIcon(icon, group, x, y, size =24, color="#333333"){
+            const svg = createElement(icon, {
+                width: size, 
+                height: size, 
+                viewbox: "0 0 24 24",
+                stroke: color, 
+                "stroke-width": 2
+            });
+            svg.setAttribute("width", size)
+            svg.setAttribute("height", size)
+            svg.setAttribute("color", color);
+            svg.setAttribute("stroke", color);
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+            const svgText = new XMLSerializer().serializeToString(svg);
+            const url = "data:image/svg+xml;charset=utf-8," + 
+                encodeURIComponent(svgText);
+            const img = new Image();
+
+            img.onload = () => {
+            const bp = new createjs.Bitmap(img);
+            bp.x = x;
+            bp.y = y;
+
+            group.addChild(bp);
+            S.update();
+            };
+            img.onerror = () => {
+                console.error("Lucide icon didn't load");
+            };
+            img.src = url;
+        }
+        function ready() {
+             console.log("✅ ready() executed!");
+    S.update();
+            let tile;
+            var pnmsg = "समाप्तम् ...";
+            var winmsg = ":(";
+            var wintmp;
+            var wpp = 15; // words per page
+            var fullist = "";
+            const urlParams = new URLSearchParams(window.location.search);
+            const translit = window.bp26Translit;
+            const tScript = translit?.getTargetScript?.()?? null;
+            const tooltipEl = document.getElementById("bp26-z-tooltip");
+            // var set = urlParams.get('s');
+            // if (!set || isNaN(set))
+            //     set = 0;
+            var set = Number(urlParams.get('s')) || 1;
+        
+            setp = "https://zat.am/bp26/img/p" + padz(set) + "c";
+            var lnk = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6CFR_0gDsZl-lmwLFWmtdXMXYGVEHGJ8fvBu2_5wvbEl9L-4Yr0ugI0TFTTdvtLlMTRmLnCIJ5FBF/pub?gid=0&single=true&output=csv";
+            Papa.parse(lnk, {
+                download: true,
+                header: true,
+                complete: populateWlist
+            })
+
+            const gradientBG = new createjs.Shape();
+            
+            gradientBG.graphics 
+            .beginLinearGradientFill(
+                ["#fff1e4", "#fff8f1", "#ffffff"],
+                [0, 0.5, 1],
+                 0, 0,
+                 0, 1024
+                 )
+                .drawRect(0, 0, 768, 1024);
+
+                S.addChildAt(gradientBG, 0);
+                S.update();
+            function populateWlist(fildat) {
+                console.log("CSV loaded: ", fildat.data);
+                fullist = fildat.data;
+                if (set > fildat.data.length / wpp) set = 0;
+                var image = [];
+                var words = [];
+                var imageWordMap = {};
+                var aud = [];
+                var imglnk = "";
+                for (var i = 0; i < wpp; i++) {
+                    const wordIndex = ((set -1) * wpp) + i;
+                    const word = fullist[wordIndex]?.padam || "";
+
+                    const imglnk = setp + padz(i+1)+".png";
+                    
+                    words.push(word)
+                    image.push(imglnk);
+                    imageWordMap[imglnk] = word;
+                }
+                var tilpics = [];
+                new Label("पुनरुक्ति 🤔", 62, "Fredoka", "#e05252").pos(10, 90, CENTER);
+                new Label("What repeats?", 36, "Fredoka", "#77574e").pos(-10, 160, CENTER);
+
+                // const homeGroup = new Container(55, 55);
+
+                // const homeBox = new createjs.Shape();
+                //     homeBox.graphics
+                //     .setStrokeStyle(2)
+                //     .beginStroke("#f4bfa5")
+                //     .beginFill("#fffdf9")
+                //     .drawRoundRect(0, 0, 55, 55, 12);
+                
+                // homeGroup.addChildAt(homeBox, 0);
+                // addLucideIcon(House, homeGroup, 15, 15, 25, "#c58b64");
+
+                // homeGroup.addTo(S).loc(75, 80);
+                // homeGroup.sca(1.3);
+                // homeGroup.cursor= "pointer";
+
+
+                // homeGroup.on("click", () => {
+                //    window.location.href = "https://zat.am/bp26/index.html";
+                // });
+
+                const instructionsGroup = new Container(55, 55);
+
+                const instructionsBox = new createjs.Shape();
+                    instructionsBox.graphics
+                    .setStrokeStyle(2)
+                    .beginStroke("#f4bfa5")
+                    .beginFill("#fffdf9")
+                    .drawRoundRect(0, 0, 55, 55, 12);
+
+                instructionsGroup.addChildAt(instructionsBox, 0);
+                addLucideIcon(CircleHelp, instructionsGroup, 15, 15, 25, "#c58b64");
+
+                instructionsGroup.addTo(S).loc(603, 85);
+                instructionsGroup.sca(1.3);
+                instructionsGroup.cursor= "pointer";
+                S.update();
+
+
+                const instructionsTitle = new Label({
+                    text: "INSTRUCTIONS", 
+                    size: 28, 
+                    font: "Fredoka",
+                    color: "#77574e",
+                    underline: true
+
+                })
+                const instructionsText = new Label({
+ 
+                    text: "      Find the identical match on the grid 🔎\n\n" +
+                           "      Click both pictures to earn points 👆\n\n" +
+                           "      Finish before the 20-second timer! ⏰\n\n"+
+                           "      If you lose click the Refresh the page to         Play Again 🔄",
+                    size: 28,
+                    font: "Fredoka", 
+                    labelWidth: 580, 
+                    align: LEFT,
+                   
+                    color: "#77574e", 
+                    lineHeight: 42
+
+                });
+                const instructionsContent = new Container(580, 420);
+                instructionsTitle.addTo(instructionsContent).pos(0, 10, CENTER, TOP);
+                instructionsText.addTo(instructionsContent).loc(20,65)
+                S.update();
+
+                const instructionsPane = new Pane({
+                width: 600, 
+                height: 480, 
+                content: instructionsContent,
+                backgroundColor: "#fffdf9", 
+                color: "#77574e", 
+                corner: 15, 
+                close:true,
+                });
+                instructionsGroup.on("click", () => {
+                    instructionsPane.show();
+                })
+                S.update();
+
+                let special;
+                function setSpecial() {
+                    let correctClicks = 0;
+                    tilpics = [];
+                    var mywords = image.slice();
+                    special = rand(wpp-1); // index starts at 0
+                    wintmp = mywords[special];
+                    winmsg = words[special];
+                    if (tScript) winmsg+= "\n" + translit.transliterate(String(winmsg), 'devanagari')
+                    //if (t) wintmp += "\n" + Sanscript.t(String(wintmp), 'devanagari', tlang[t]);
+
+                    var wlab;
+                    const load = F.loadAssets(image);
+                    load.on("complete", () => {
+                        console.log("Pictures successfully loaded!");
+                    
+                        function createPictureCellColor (img){
+                           const size = 90;
+                            const cell = new Container(size, size);
+                           const bg = new createjs.Shape();
+                            
+                            cell.pictureFile=img;
+                            bg.graphics 
+                            .beginFill("#fff8f1")
+                            .drawRect(0, 0, size, size)
+                            .endFill()
+                            .beginLinearGradientFill(
+                             ["#fff1e4", "#fff8f1", "#ffffff"],
+                             [0, 0.5, 1],
+                             0, 0,
+                             0, size
+                        )
+                            .drawRoundRect(0, 0, size, size, 12)
+                             
+                            cell.addChild(bg);
+                            new Pic(img).siz(size -10).center(cell);
+                          
+                            const greyOverLap = new createjs.Shape();
+
+                            greyOverLap.graphics
+                            .beginFill("#808080")
+                            .drawRoundRect(0, 0, size, size, 12);
+                            
+
+                        greyOverLap.alpha = 0;
+                        greyOverLap.mouseEnabled = false;
+
+                        cell.addChild(greyOverLap);
+                        cell.greyOverLap = greyOverLap;
+
+                        const border = new createjs.Shape();
+                        border.graphics 
+                       .setStrokeStyle(1)
+                        .beginStroke("#f4bfa5")
+                        .drawRoundRect(0, 0, size, size, 12);
+                        cell.addChild(border)
+
+                        return cell;
+                        }
+
+                     loop(image, myimg => {
+                                tilpics.push(createPictureCellColor(myimg));
+                        })
+                            wlab = createPictureCellColor(wintmp);
+                        tilpics.push(wlab);
+                    shuffle(tilpics);
+                        tile = new Tile({
+                        obj: tilpics, 
+                        cols: 4, 
+                        rows: 4, 
+                        spacingH: 0, 
+                        spacingV: 0, 
+                        unique: true, 
+                        backdropColor: "#fffdf9", 
+                        backdropPadding: 0
+
+                    })
+                        .cur()
+                        .sca(1.5)
+                        .pos(25, 240, CENTER, TOP);
+                    
+                         S.update();
+                        console.log(
+                            tile.children.map(child => ({
+                                type: child.constructor.name,
+                                backgroundColor: child.backgroundColor,
+                                color: child.color
+                            }))
+                        );
+
+
+                        const getHoverText = (bitmapFile) => {
+                            if (!bitmapFile) return "";
+                            let matchedWord = imageWordMap[bitmapFile] || "";
+                        if (!matchedWord){
+                            const key = Object.keys(imageWordMap).find((k) => 
+                            String(bitmapFile).endsWith(k)
+                            );
+                            matchedWord = key ? imageWordMap[key] : "";
+                        } 
+                        if (!matchedWord) return "";
+                           const popupTarget = tScript || "itrans";
+                        
+                           return matchedWord + (translit?.transliterate
+                            ? " - " + translit.transliterate(
+                              matchedWord, 
+                              "devanagari", 
+                               {target: popupTarget}
+                            )
+                        : "");
+                    };
+                       
+                        tile.on("mouseover", e => {
+                            const pick = e.target;
+                            
+                            if (!pick || !tooltipEl) return;
+
+                            let cell = pick;
+                            while (cell && cell !== tile && !cell.pictureFile){
+                                cell = cell.parent;
+                            }
+                            if(!cell || !cell.pictureFile) return;
+                            if (cell.wasClicked) {
+                                tooltipEl.style.display = "none";
+                                return
+                            }
+                            const txt = getHoverText(cell.pictureFile);
+
+                            if(!txt) return;
+
+                            tooltipEl.textContent = txt;
+                            tooltipEl.style.display = "block";
+                        });
+
+
+                        tile.on("mousemove", e => {
+                            if (!tooltipEl || tooltipEl.style.display !== "block") return;
+                            const ev = e.rawEvent || e;
+                            const x = ev.pageX || ev.clientX || 0;
+                            const y = ev.pageY || ev.clientY || 0;
+                            tooltipEl.style.left = (x + 12) + "px";
+                            tooltipEl.style.top = (y + 12) + "px";
+                        });
+
+                        tile.on("mouseout", () => {
+                            if (tooltipEl) tooltipEl.style.display = "none";
+                        });
+
+                        tile.on("mousedown", e => {
+
+                            let cell = e.target; // this gets what caused the event
+                            while (cell && cell !== tile && !cell.pictureFile){
+                                cell = cell.parent;
+                            }
+
+                            if(!cell || !cell.pictureFile) return;
+                            if(cell.wasClicked) return;
+
+                            if (wintmp === cell.pictureFile) {
+                                cell.wasClicked = true;
+                                correctClicks++;
+
+                                cell.greyOverLap.alpha=0.5;
+                                
+                                if(tooltipEl){
+                                    tooltipEl.style.display = "none";
+                                }
+                                S.update();
+
+                            if (correctClicks === 2){
+                                pnmsg = winmsg;
+
+                                timer.stop();
+                                tile.noMouse(); // do not let player press on tile
+                                // end.noMouse(); // do not let player close the pane right away
+
+                                const finalScore = timer.time *3;
+
+                                timeout(0.5, () => { // wait for 1 second then let player close pane
+                                    // Show popup and submit score
+                                    submitScoreNow(finalScore);
+                                    new Pane({
+                                    content: new Label({
+                                    text: pnmsg + "\nScore: " + finalScore, 
+                                    font:"Fredoka",
+                                    color: "#77574e", 
+                                    align: CENTER
+
+                                    }),
+                                    backing: new Rectangle({
+                                    width: 280,
+                                    height: 200,
+                                    color: "#fff1e4",
+                                    borderColor: "#f4bfa5", 
+                                    borderWidth: 4,
+                                    corner: 15,
+                                    }),
+                                    backdropColor: "transparent",
+                                    close: true
+
+                                }).show(() => {
+                                    window.location.reload();
+                                    });
+                                });
+                            }
+                            }else {
+                                
+                                cell.wasClicked = true
+                                wrong.score++;
+                                S.update()
+                               }
+                            });
+                        });
+        
+                };
+                setSpecial();
+                const emitter = new Emitter({
+                    startPaused: true
+                });
+                //const right = new Scorer({ backgroundColor: green }).pos(100, 80, RIGHT, BOTTOM);
+                const wrongGroup = new Container(300, 50)
+                addLucideIcon(CircleX, wrongGroup, 15, 1, 23, "#e05252");
+                const wrongText = new Label("Wrong Answers", 26.5, "Arial", "#77574e");
+                wrongText.addTo(wrongGroup).loc(50,0);
+
+                const wrong = new Scorer({
+                    color: "#e05252", 
+                    backgroundColor: "transparent",
+                    size: 36
+                });
+                wrong.addTo(wrongGroup).loc(135, 55);
+                S.update();
+                
+               const timeGroup = new Container (300, 50);
+                addLucideIcon(Clock3, timeGroup, -10, 0, 23, "#8a8582");
+               const timeText = new Label("Time Left", 26.5, "Arial", "#77574e");
+               timeText.addTo(timeGroup).loc(34,0);
+
+
+               timer = new Timer({
+                    time: 20,
+                    color: "#7a9b83", 
+                    backgroundColor: "transparent",
+                    size: 36
+               })
+                timer.addTo(timeGroup).loc(90, 53);
+
+                timer.on("step", () => {
+                    if(timer.time > 10){
+                        timer.color = "#7a9b83";
+                    }else if (timer.time > 5) {
+                         timer.color = "#d9b44a";
+                    }else{
+                        timer.color="#e05252";
+                    }
+                });
+                
+                S.update();
+
+                const wrongBox = new createjs.Shape();
+                    wrongBox.graphics
+                    .setStrokeStyle(2)
+                     .beginLinearGradientStroke(
+                    ["#f4bfa5"],
+                     [0, 0.5, 1], 
+                     0, 0,
+                    wrongGroup.width, wrongGroup.height
+                    )
+                    .drawRoundRect(-10, -11,
+                    wrongGroup.width -18,
+                    wrongGroup.height +40,
+                        12
+                            );
+                    wrongGroup.addChildAt(wrongBox, 0);
+                    S.update();
+
+                const timeBox = new createjs.Shape();
+                    timeBox.graphics
+                    .setStrokeStyle(2)
+                     .beginLinearGradientStroke(
+                    ["#f4bfa5"],
+                     [0, 0.5, 1], 
+                     0, 0,
+                    timeGroup.width, timeGroup.height
+                    )
+                    .drawRoundRect(-25, -11,
+                    timeGroup.width -70,
+                    timeGroup.height +40,
+                        12
+                            );
+                    timeGroup.addChildAt(timeBox, 0);
+                    S.update();
+                
+                const playAgainGroup = new Container (350, 50);
+                // addLucideIcon(RotateCcw, playAgainGroup, 70, 0, 23, "#c58b64");
+            //    const playAgainText = new Label("Play Again", 26.5, "Arial", "#77574e");
+            //    playAgainText.addTo(playAgainGroup).loc(120,0);
+               
+            //    const playAgainBox = new createjs.Shape();
+            //      playAgainBox.graphics
+            //         .setStrokeStyle(2)
+            //          .beginLinearGradientStroke(
+            //         ["#f4bfa5"],
+            //          [0, 0.5, 1], 
+            //          0, 0,
+            //         playAgainGroup.width, playAgainGroup.height
+            //         )
+            //         .drawRoundRect(-10, -11,
+            //         playAgainGroup.width +48,
+            //         playAgainGroup.height +0,
+            //             12
+            //                 );
+            //         playAgainGroup.addChildAt(playAgainBox, 0);
+
+            //         playAgainGroup.cursor= "pointer";
+
+            // playAgainGroup.on("click", () => {
+            //     window.location.reload();
+            // });
+            // S.update();
+
+                
+                const scoreBoard = new Container (768, 60);
+                wrongGroup.addTo(scoreBoard).loc(115, -30);
+                timeGroup.addTo(scoreBoard).loc(440, -30);
+                playAgainGroup.addTo(scoreBoard).loc(190,85);
+
+                scoreBoard.pos(0, 90, LEFT, BOTTOM);
+                S.update();
+
+                const borderWidth = 600; 
+                const borderHeight = 780;
+                const anotherBorder = new createjs.Shape();
+                    anotherBorder.graphics
+                    .setStrokeStyle(2)
+                    .beginStroke("#f4bfa5")  
+                    .beginFill("#fffdf9")                      
+                    .drawRoundRect(75, 210, borderWidth, borderHeight, 20);  
+                
+                anotherBorder.mouseEnabled = false;
+                S.addChildAt(anotherBorder, 1)
+            
+                S.update();
+
+
+
+                
+                STYLE = { font: "Tourney", backdropColor: "transparent" }
+                const end = new Pane({
+                    content: new Label({
+                    text: "समाप्तम्" + "\nउत्तरम्: " + winmsg, 
+                    font:"Fredoka",
+                    color: "#77574e", 
+                    align: CENTER
+                    }),
+
+                    backing: new Rectangle({
+                    width: 309,
+                    height: 200,
+                    color: "#fff1e4",
+                    borderColor: "#f4bfa5", 
+                    borderWidth: 4,
+                    corner: 15,
+                    }),
+                     backdropColor: "transparent",
+                     close: true
+
+
+                    })
+                timer.on("complete", () => {
+                    end.show(); // show end, when closes will call restart
+                    tile.noMouse(); // do not let player press on tile
+                    end.noMouse(); // do not let player close the pane right away
+                    timeout(1, () => { // wait for 1 second then let player close pane
+                        end.mouse();
+                    });
+                });
+            }
+        }
+                                     
+            new Frame(FIT, 700, 1024, "#fff8f1" , dark, ready, "gf_Fredoka");
+    
+        function bp26OffsetZimCanvas() {
+            const placeholder = document.getElementById("header-placeholder");
+            const offset = placeholder ? placeholder.offsetHeight : 0;
+             const moveHigher = 20;
+
+            document.querySelectorAll("canvas").forEach((canvas) => {
+        canvas.style.marginTop = (offset - moveHigher) + "px";
+                canvas.style.height = `calc(100vh - ${offset}px)`;
+            });
+        }
+
+        window.addEventListener("load", () => {
+            bp26OffsetZimCanvas();
+            let tries = 0;
+            const i = setInterval(() => {
+                bp26OffsetZimCanvas();
+                tries += 1;
+                if (tries > 20) clearInterval(i);
+            }, 150);
+        });
+        window.addEventListener("resize", bp26OffsetZimCanvas);
+
+        // Set the game name to be used the database insert
+        window.addEventListener("DOMContentLoaded", () => {
+            if (window.bp26Init) {
+                window.bp26Init({ game: "bp26-Game7", day: 7 });
+            }
+        });
+
+        // Submit score function
+        async function submitScoreNow(finalScore) {
+            if (typeof window.reportScore !== "function") {
+                console.warn("[BP26] reportScore() not found. Check that ./js/bp26-score.js is loading.");
+                return;
+            }
+
+            try {
+                await window.reportScore(finalScore);
+                console.log("[BP26] ✅ reportScore success");
+            } catch (err) {
+                console.error("[BP26] ❌ reportScore failed", err);
+            }
+        }

@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Numerale | BodhaPlay</title>
+
+    <!-- ==============================
+         NUMERALE GAME CSS
+    ============================== -->
+    <link rel="stylesheet" href="/src/style.css">
+
+    <!-- ==============================
+         MATERIAL ICONS
+    ============================== -->
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    >
+
+    <!-- ==============================
+         SHARED ZAT.AM NAVBAR CSS
+    ============================== -->
+    <link rel="stylesheet" href="/shared/navbar.css">
+    <link rel="stylesheet" href="/bp26/css/header.css">
+
+    <!-- ==============================
+         GAME DEPENDENCIES
+    ============================== -->
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+
+    <!-- ==============================
+         NUMERALE GAME JAVASCRIPT
+    ============================== -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Numerale | BodhaPlay</title>
+
+    <!-- ==============================
+         NUMERALE GAME CSS
+    ============================== -->
+    <link rel="stylesheet" href="/src/style.css">
+
+    <!-- ==============================
+         MATERIAL ICONS
+    ============================== -->
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    >
+
+    <!-- ==============================
+         SHARED ZAT.AM NAVBAR CSS
+    ============================== -->
+    <link rel="stylesheet" href="/shared/navbar.css">
+    <link rel="stylesheet" href="/bp26/css/header.css">
+
+    <!-- ==============================
+         GAME DEPENDENCIES
+    ============================== -->
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+
+    <!-- ==============================
+         NUMERALE GAME JAVASCRIPT
+    ============================== -->
+<script src="/hooks/script.js" defer></script>
+</head>
+
+<body data-page="games">
+
+    <!-- ==============================
+         SHARED ZAT.AM NAVBAR
+    ============================== -->
+    <div id="header-placeholder"></div>
+
+    <!-- ==============================
+         NUMERALE GAME
+    ============================== -->
+    <div id="wrapper" class="center">
+
+        <div id="header">
+
+            <div class="absleft">
+                <button
+                    class="smallbutton"
+                    onclick="populate_Numerale()"
+                    title="New game"
+                >
+                    <p class="material-icons">refresh</p>
+                </button>
+
+                <button
+                    id="hardmodebutton"
+                    class="smallbutton"
+                    onclick="toggleHardmode()"
+                    title="Hard mode is off"
+                >
+                    <p class="material-icons">
+                        sentiment_satisfied_alt
+                    </p>
+                </button>
+            </div>
+
+            <div class="absright">
+                <button
+                    class="smallbutton"
+                    onclick="togglePanel('about', 'block')"
+                    title="About Numerale"
+                >
+                    <p class="material-icons">question_mark</p>
+                </button>
+            </div>
+
+            <h1>Numerale</h1>
+
+        </div>
+
+        <div id="message"></div>
+
+        <hr>
+
+        <table id="numbers" class="center"></table>
+
+        <div id="numpad"></div>
+
+        <br>
+    </div>
+
+    <!-- ==============================
+         ABOUT AND WINNER PANELS
+    ============================== -->
+    <div id="messages" class="flex">
+
+        <div id="about">
+
+            <div class="absright">
+                <button
+                    class="smallbutton"
+                    onclick="togglePanel('about', 'none')"
+                >
+                    <p class="material-icons">close</p>
+                </button>
+            </div>
+
+            Inspired by Wordle but with numerals from Devanagari language.
+
+            <br><br>
+
+            Answer is between 10000 - 99999.
+
+            <br><br>
+
+            Key in a number and press Enter to take a guess.
+
+            <br><br>
+
+            <table class="hardmode">
+                <tr>
+                    <td class="green"><p>6</p></td>
+                    <td class="green"><p>0</p></td>
+                    <td class="void"><p>9</p></td>
+                    <td class="left"><p>5</p></td>
+                    <td class="left"><p>8</p></td>
+                </tr>
+            </table>
+
+            <br><br>
+
+            Green identifies a numeral in the correct position.
+
+            <br><br>
+
+            Grey identifies a numeral not present in the answer.
+
+            <br><br>
+
+            Yellow identifies a correct numeral but in the wrong position.
+
+            <br><br>
+
+            <table>
+                <tr>
+                    <td class="right"><p>à¥¯</p></td>
+                    <td class="green"><p>à¥©</p></td>
+                    <td class="both"><p>à¥¨</p></td>
+                    <td class="green"><p>à¥­</p></td>
+                    <td class="void"><p>à¥®</p></td>
+                </tr>
+            </table>
+
+            <br><br>
+
+            Only in Easy mode, arrows point towards the correct location.
+
+            <br><br>
+
+            In Hard mode, symbols are revealed only after you submit.
+
+            <br><br>
+
+            <span style="white-space: nowrap">
+                &copy; 2025
+                <a href="https://www.pradeepd.com/hobbies/apps">Pradeep D</a>,
+                <a href="https://www.iseek.page">iSeek</a>.
+                Courtesy: Graeme Sutherland
+            </span>
+
+            <br><br>
+
+        </div>
+
+        <div id="winner" class="abscenter">
+
+            <div class="absright">
+                <button
+                    class="smallbutton"
+                    onclick="togglePanel('winner', 'none')"
+                >
+                    <p class="material-icons">close</p>
+                </button>
+            </div>
+
+            <h1>Numerale!</h1>
+
+            <p id="sharedata">
+                &#x2B1B;&#x2B1B;&#x1F7E9;&#x1F7E9;&#x2B1B;<br>
+                &#x2B1B;&#x2B1B;&#x2B1B;&#x2B1B;&#x2B1B;<br>
+                &#x1F7E9;&#x1F7E9;&#x1F7E9;&#x1F7E9;&#x1F7E9;
+            </p>
+
+            <br>
+
+            <button id="sharebutton">
+                Share
+                <span class="material-symbols-outlined">share</span>
+            </button>
+
+        </div>
+
+        <span id="hardmodenotification">
+            Hardmode ON!
+        </span>
+
+    </div>
+
+    <br>
+
+    <!-- ==============================
+         SERVICE WORKER
+    ============================== -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker
+                    .register("/051-numerale/serviceWorker.js")
+                    .then(() => console.log("Service worker registered"))
+                    .catch(err => console.log("Service worker not registered", err));
+            });
+        }
+    </script>
+
+    <br>
+
+    <!-- ==============================
+         ORIGINAL BODHAPLAY NAVBAR LOADER
+    ============================== -->
+    <script
+        type="module"
+        src="/bp26/js/load-header.js"
+    ></script>
+
+</body>
+</html>
